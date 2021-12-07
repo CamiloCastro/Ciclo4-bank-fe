@@ -7,7 +7,7 @@ import { setContext }                                  from 'apollo-link-context
 
 
 const httpLink = createHttpLink({
-    uri: 'https://misiontic-2021-apigateway-p38.herokuapp.com/'
+    uri: 'https://jccp-misiontic-bank-api-gw.herokuapp.com/'
 })
 
 
@@ -15,7 +15,7 @@ const authLink = setContext((_, { headers }) => {
     return {
         headers: {
             ...headers,
-            "Authorization": localStorage.getItem("token_access") || ""
+            "Authorization": localStorage.getItem("tokenAccess") || ""
         }
     }
 })

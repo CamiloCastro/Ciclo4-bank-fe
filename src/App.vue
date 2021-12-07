@@ -1,7 +1,7 @@
 <template>
   <div id="app" class="app">
     <div class="header">
-      <h1>Banco<br />MT2021-P8</h1>
+      <h1>Banco<br />MisionTic 2022 - P58</h1>
       <nav>
         <button v-if="isAuth" v-on:click="loadHome"> Inicio </button>
         <button v-if="isAuth" v-on:click="loadAccount"> Cuenta </button>
@@ -23,7 +23,7 @@
     </div>
 
     <div class="footer">
-      <h2>MisionTic 2022 - P58 Course</h2>
+      <h2>MisionTic 2022 - P58</h2>
     </div>
   </div>
 </template>

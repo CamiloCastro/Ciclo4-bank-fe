@@ -5,7 +5,6 @@ import Login                                  from './components/Login.vue'
 import SignUp                                 from './components/SignUp.vue'
 import Home                                   from './components/Home.vue'
 import Account                                from './components/Account.vue'
-import TransactionCreate                      from './components/TransactionCreate.vue'
 
 const routes = [
   {
