@@ -128,6 +128,8 @@
         width: 100%;
         border-collapse: collapse;
         border: 1px solid rgba(0, 0, 0, 0.3);
+        overflow-y: scroll;
+        height: 100%;
     }
 
     #Historial table td,

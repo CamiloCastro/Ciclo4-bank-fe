@@ -1,42 +1,87 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
-import App                                    from './App.vue'
+import gql from "graphql-tag";
+import { createRouter, createWebHistory } from "vue-router";
+import { ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client/core'
 
-import Login                                  from './components/Login.vue'
-import SignUp                                 from './components/SignUp.vue'
-import Home                                   from './components/Home.vue'
-import Account                                from './components/Account.vue'
+import Login from './components/Login.vue'
+import SignUp from './components/SignUp.vue'
+import Home from './components/Home.vue'
+import Account from './components/Account.vue'
+import Transaction from './components/Transaction.vue'
 
 const routes = [
-  {
-    path: '/',
-    name: 'root',
-    component: App
-  },
-  {
-    path: '/user/login',
-    name: "login",
-    component: Login
-  },
-  {
-    path: '/user/signUp',
-    name: "signUp",
-    component: SignUp
-  },
-  {
-    path: '/user/home',
-    name: "home",
-    component: Home
-  },
-  {
-    path: '/user/account',
-    name: "account",
-    component: Account
-  }
+    
+    {
+        path: '/user/login',
+        name: "login",
+        component: Login,
+        meta: { requiresAuth: false }
+    },
+    {
+        path: '/user/signUp',
+        name: "signUp",
+        component: SignUp,
+        meta: { requiresAuth: false }
+    },
+    {
+        path: '/user/home',
+        name: "home",
+        component: Home,
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/user/account',
+        name: "account",
+        component: Account,
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/user/transaction',
+        name: "transaction",
+        component: Transaction,
+        meta: { requiresAuth: true }
+    }
 ];
 
 const router = createRouter({
-  history: createWebHashHistory(),
-  routes
+    history: createWebHistory(),
+    routes
 })
 
-export default router
+const apolloClient = new ApolloClient({
+    link: createHttpLink({ uri: 'https://jccp-misiontic-bank-api-gw.herokuapp.com/' }),
+    cache: new InMemoryCache()
+})
+async function isAuth() {
+    if (localStorage.getItem("tokenAccess") === null ||
+        localStorage.getItem("tokenRefresh") === null) {
+        return false;
+    }
+    try {
+        var result = await apolloClient.mutate({
+            mutation: gql`
+                mutation ($refresh: String!) {
+                    refreshToken(refresh: $refresh) {
+                        access
+                    }
+                }
+            `,
+            variables: {
+                refresh: localStorage.getItem("tokenRefresh"),
+            },
+        })
+        localStorage.setItem("tokenAccess", result.data.refreshToken.access);
+        return true;
+    } catch {
+        localStorage.clear();
+        alert("Su sesión expiró, por favor vuelva a iniciar sesión");
+        return false;
+    }
+}
+router.beforeEach(async (to, from) => {
+    var is_auth = await isAuth();
+    if (is_auth == to.meta.requiresAuth) return true
+
+    if (is_auth) return { name: "home" };
+    return { name: "login" };
+})
+export default router;

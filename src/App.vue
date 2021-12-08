@@ -5,7 +5,7 @@
       <nav>
         <button v-if="isAuth" v-on:click="loadHome"> Inicio </button>
         <button v-if="isAuth" v-on:click="loadAccount"> Cuenta </button>
-        <button v-if="isAuth" v-on:click="loadTransaction"> Transferir </button>
+        <button v-if="isAuth" v-on:click="loadTransaction"> Transacción </button>
         <button v-if="isAuth" v-on:click="logOut"> Cerrar Sesión </button>
 
         <button v-if="!isAuth" v-on:click="loadLogIn"> Iniciar Sesión </button>
@@ -33,25 +33,20 @@
   export default{
     name: 'App',
 
-    data: function(){
-      return {
-        isAuth: false
-      }
+    computed: {
+        isAuth: {
+
+            get: function() {
+                return this.$route.meta.requiresAuth;
+            },
+            set: function() { }
+        }
     },
 
-    components:{
-    },
+    
 
     methods:{
-      verifyAuth: function(){
-        this.isAuth = localStorage.getItem("isAuth") || false;
-        if(this.isAuth == false){
-          this.$router.push({name: "login"})
-        }
-        else{
-          this.$router.push({name: "home"});
-        }
-      },
+      
       
       loadHome: function(){
         this.$router.push({name: "home"});
@@ -62,7 +57,7 @@
       },
 
       loadTransaction: function(){
-        this.$router.push({name: "transactionCreate"});
+        this.$router.push({name: "transaction"});
       },
 
       logOut: function(){
@@ -82,21 +77,16 @@
       completedLogIn: function(data){
         localStorage.setItem('username', data.username);
         localStorage.setItem('tokenRefresh', data.tokenRefresh);
-        localStorage.setItem('tokenAccess', data.tokenAccess);
-        localStorage.setItem('isAuth', true);
-        alert("Autenticación exitosa");
-        this.verifyAuth();
-      },
+        localStorage.setItem('tokenAccess', data.tokenAccess);        
+        alert("Autenticación exitosa");      
+        this.loadHome();  
+      },      
 
       completedSignUp: function(data){
         alert("Registro exitoso");
         this.completedLogIn(data);
       },
       
-    },
-
-    created: function(){
-      this.verifyAuth();
     }
   }
 </script>
@@ -126,7 +116,7 @@
 
   .header nav {
     height: 100%;
-    width: 25%;
+    width: 30%;
     display: flex;
     justify-content: space-around;
     align-items: center;
